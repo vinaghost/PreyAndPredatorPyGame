@@ -13,7 +13,7 @@ class Entity:
         self.energy = energy
 
     def draw(self, screen):
-        draw.rect(screen, self.color, (self.position[0], self.position[1], BLOCK_SIZE, BLOCK_SIZE))
+        draw.circle(screen, self.color, self.position, BLOCK_SIZE)
 
     def move(self):
         angle = random.randint(0, 360)
