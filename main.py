@@ -1,11 +1,11 @@
-from pygame import display
+import pygame
 import sys
 from environment import *
 
 pygame.init()
 
-SCREEN = display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-display.set_caption("Earfh")
+SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Earfh")
 
 clock = pygame.time.Clock()
 
