@@ -1,23 +1,19 @@
-import pygame
+from pygame import display
 import sys
-from enviroment import *
-from settings import *
-from predator import *
-from prey import *
-from tree import *
+from environment import *
 
 pygame.init()
 
-SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Earfh")
+SCREEN = display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+display.set_caption("Earfh")
 
 clock = pygame.time.Clock()
 
-e = Enviroment(SCREEN)
+e = Environment(SCREEN)
 
 while True:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or preys == [] or predators == [] or trees == []:
+        if event.type == pygame.QUIT or preys == [] or predators == []:
             pygame.quit()
             sys.exit()
 
