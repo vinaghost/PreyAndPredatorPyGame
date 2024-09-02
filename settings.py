@@ -1,0 +1,19 @@
+FPS = 60
+
+PREY_COUNT = 16
+PREDATOR_COUNT = 8
+TREE_COUNT = 8
+preys = []
+predators = []
+
+BLACK = (0, 0, 0)
+WHITE = (200, 200, 200)
+GREEN = (0, 200, 0)
+RED = (200, 0, 0)
+DARK_GREEN = (1, 50, 32)
+
+WINDOW_WIDTH = 600
+WINDOW_HEIGHT = 600
+
+BLOCK_SIZE = 10
+SPEED = 1
