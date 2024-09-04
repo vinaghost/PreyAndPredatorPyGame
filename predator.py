@@ -4,7 +4,7 @@ from entity import Entity
 from settings import *
 from NeuralNetwork import NeuralNetwork
 from environment import Environment
-from pygame import time, Vector2, Rect
+from pygame import time, Vector2, Rect, draw
 import torch
 import numpy as np
 
@@ -34,7 +34,7 @@ class Predator(Entity):
             self.spawn()
             return
 
-        nearest_neighbors = self.environment.prey_tree.nearest_neighbors(tuple(self.position), max_distance= 2 * RADIUS + RADIUS/100)
+        nearest_neighbors = self.environment.prey_tree.nearest_neighbors(tuple(self.position), max_distance= DIAMETER + RADIUS/100)
         if len(nearest_neighbors) > 0:
             target =  next((p for p in self.environment.preys if p.identity == nearest_neighbors[0].item), None)
             if target:
@@ -57,17 +57,18 @@ class Predator(Entity):
         output = self.brain(tensor)
         output = output.detach().numpy()
 
-        self.rotation += output[0] * 360
+        self.rotation += output[0] * 100
 
     def scan(self) -> np.ndarray:
         nearest_neighbors = self.environment.prey_tree.nearest_neighbors(tuple(self.position), max_distance=self.sight)
 
         if len(nearest_neighbors) == 0:
-            result = np.zeros([25])
-            result[-1] = self.energy
-            return result
+            return np.zeros([24])
 
-        result = np.empty([25])
+        result = np.empty([24])
+
+        count_predator = self.environment.get_predator_count()
+
         for i, angle in enumerate(self.lines_of_sight):
             rad = np.radians(angle + 90 + self.rotation)
             x = self.sight * np.cos(rad) + self.position.x
@@ -83,14 +84,19 @@ class Predator(Entity):
                 if score > max_score:
                     max_score = score
 
-            result[i] = max_score
+            if count_predator < 5:
+                if max_score > 0:
+                    draw.line(self.environment.screen, RED, self.position, Vector2(x, y), 1)
+                else:
+                    draw.line(self.environment.screen, GREEN, self.position, Vector2(x, y), 1)
 
-        result[-1] = self.energy
+
+            result[i] = max_score
         return result
 
 
     def get_fitness_score(self) -> int:
-        return self.kill_count + self.child_count + self.life_time() * 2
+        return self.kill_count * 2 + self.child_count * 3 + self.life_time()
 
     def get_describe(self) -> str:
         return f'Predator {str(self.identity)[:8]} has lived for {self.life_time()} seconds, has {self.child_count} children and has killed {self.kill_count} preys'

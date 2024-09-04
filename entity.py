@@ -13,6 +13,7 @@ class Entity:
         self.sight = sight
         self.lines_of_sight = lines_of_sight
         self.is_alive = True
+        self.speed = DEFAULT_SPEED
 
         self.rotation = 0
 
@@ -36,7 +37,7 @@ class Entity:
 
     def move(self) -> None:
         self.clamp_rotation()
-        self.position += Vector2(0,1).rotate(self.rotation) * DEFAULT_SPEED
+        self.position += Vector2(0,1).rotate(self.rotation) * self.speed
 
         if self.position[0] > WINDOW_WIDTH - RADIUS:
             self.position[0] = WINDOW_WIDTH - RADIUS

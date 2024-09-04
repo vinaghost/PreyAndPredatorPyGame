@@ -17,9 +17,9 @@ def crossover(parent1 : NeuralNetwork, parent2 : NeuralNetwork):
     child1.input.weight.data = torch.cat((parent1.input.weight.data[0:cross_over_idx], parent2.input.weight.data[cross_over_idx::]), dim=0)
     child2.input.weight.data = torch.cat((parent2.input.weight.data[0:cross_over_idx], parent1.input.weight.data[cross_over_idx::]), dim=0)
 
-    cross_over_idx = round(len(parent1.hidden.weight.data) * CROSS_OVER_THRESHOLD)
-    child1.hidden.weight.data = torch.cat((parent1.hidden.weight.data[0:cross_over_idx], parent2.hidden.weight.data[cross_over_idx::]), dim=0)
-    child2.hidden.weight.data = torch.cat((parent2.hidden.weight.data[0:cross_over_idx], parent1.hidden.weight.data[cross_over_idx::]), dim=0)
+    #cross_over_idx = round(len(parent1.hidden.weight.data) * CROSS_OVER_THRESHOLD)
+    #child1.hidden.weight.data = torch.cat((parent1.hidden.weight.data[0:cross_over_idx], parent2.hidden.weight.data[cross_over_idx::]), dim=0)
+    #child2.hidden.weight.data = torch.cat((parent2.hidden.weight.data[0:cross_over_idx], parent1.hidden.weight.data[cross_over_idx::]), dim=0)
 
     cross_over_idx = round(len(parent1.output.weight.data) * CROSS_OVER_THRESHOLD)
     child1.output.weight.data = torch.cat((parent1.output.weight.data[0:cross_over_idx], parent2.output.weight.data[cross_over_idx::]), dim=0)
@@ -30,8 +30,11 @@ def crossover(parent1 : NeuralNetwork, parent2 : NeuralNetwork):
 
 def mutate(model: NeuralNetwork) -> NeuralNetwork:
     for param in model.parameters():
-        if torch.rand(1).item() < MUTATION_CHANGE_THRESHOLD:
-            param.data += torch.randn_like(param.data) * 0.1  # Adding Gaussian noise with std=0.1
+        if torch.rand(1).item() < 0.5:
+            if torch.rand(1).item() < 0.5:
+                param.data -= torch.randn_like(param.data) * MUTATION_CHANGE_THRESHOLD
+            else:
+                param.data += torch.randn_like(param.data) * MUTATION_CHANGE_THRESHOLD
     return model
 
 def handle_predator(population: list[Predator]) -> list[NeuralNetwork]:
@@ -59,20 +62,20 @@ def handle_predator(population: list[Predator]) -> list[NeuralNetwork]:
 
 def initialize_population(environment : Environment):
     for _ in range(PREY_COUNT):
-        environment.preys.append(Prey(uuid.uuid4(), (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT)), environment))
+        environment.preys.append(Prey(uuid.uuid4(), (random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
 
     for _ in range(PREDATOR_COUNT):
-        environment.predators.append(Predator(uuid.uuid4(), NeuralNetwork(),(random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT)), environment))
+        environment.predators.append(Predator(uuid.uuid4(), NeuralNetwork(),(random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
 
 def recreate_population(environment : Environment, brains : list[NeuralNetwork]):
     environment.preys = []
     environment.predators = []
 
     for _ in range(PREY_COUNT):
-        environment.preys.append(Prey(uuid.uuid4(), (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT)), environment))
+        environment.preys.append(Prey(uuid.uuid4(), (random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
 
     for brain in brains:
-        environment.predators.append(Predator(uuid.uuid4(), brain, (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT)), environment))
+        environment.predators.append(Predator(uuid.uuid4(), brain, (random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
 
 
 pygame.init()

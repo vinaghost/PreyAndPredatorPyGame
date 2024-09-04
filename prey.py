@@ -13,6 +13,7 @@ class Prey(Entity):
         self.child_count = 0
         self.last_charge = 0
         self.last_change_rotation = 0
+        self.speed = 0
 
     def spawn(self) -> None:
         if len(self.environment.preys) > PREY_MAX_COUNT:
@@ -23,7 +24,7 @@ class Prey(Entity):
     def logic(self) -> None:
         if self.energy > DEFAULT_ENERGY * 2:
             self.update_energy(-(DEFAULT_ENERGY * 2))
-            self.spawn()
+            #self.spawn()
 
         current_tick = time.get_ticks()
         if self.last_charge == 0:
@@ -40,8 +41,10 @@ class Prey(Entity):
                 self.rotation += random.gauss() * 180
                 self.last_change_rotation = current_tick
 
+
+
     def get_fitness_score(self) -> int:
-        return self.child_count + self.life_time() * 2
+        return self.child_count * 2 + self.life_time()
 
     def get_describe(self) -> str:
         return f'Prey {str(self.identity)[:8]} has lived for {self.life_time()} seconds and has {self.child_count} children'

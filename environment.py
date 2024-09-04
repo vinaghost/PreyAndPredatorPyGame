@@ -1,8 +1,9 @@
 from settings import *
 from pyquadtree import QuadTree
+from pygame import Surface
 
 class Environment:
-    def __init__(self, screen):
+    def __init__(self, screen : Surface):
         self.screen = screen
 
         self.preys = []
@@ -46,9 +47,11 @@ class Environment:
         self.create_prey_tree()
 
         for predator in self.predators:
-            predator.update(self.screen)
+            if predator.is_alive:
+                predator.update(self.screen)
 
         self.create_predator_tree()
 
         for prey in self.preys:
-            prey.update(self.screen)
+            if prey.is_alive:
+                prey.update(self.screen)
