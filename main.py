@@ -177,17 +177,20 @@ running = True
 
 prey = 0
 predator = 0
-
+epoch_start = pygame.time.get_ticks()
 while running:
-    if e.is_epoch_completed():
+    epoch_last = pygame.time.get_ticks() - epoch_start
+    if e.is_epoch_completed() or epoch_last > 30_000:
         if e.get_prey_count() == 0:
             print('All preys are dead')
             predator += 1
-        else:
+        elif e.get_predator_count() == 0:
             print('All predators are dead')
             prey += 1
+        else:
+            print('Time over')
 
-        print(f'Epoch {generation} is completed')
+        print(f'Epoch {generation} is completed in {epoch_last // 1000} second(s)')
         print(f'Prey - Predator: {prey} - {predator}')
 
         e.kill_all()
@@ -222,6 +225,7 @@ if check_folder_exists(folder_name):
 
 create_folder(folder_name)
 
+e.kill_all()
 sorted_population = sorted(e.predators, key=lambda x: x.get_fitness_score(), reverse=True)
 
 torch.save(sorted_population[0].brain.state_dict(), os.path.join(folder_name, 'first_predator_brain.pth'))
