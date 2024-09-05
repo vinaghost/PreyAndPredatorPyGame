@@ -1,5 +1,8 @@
+# https://github.com/ardalan-dsht/genetic-algorithm-for-pytorch/blob/main/genetic_algorithm.py
+
+from typing import List
+
 import pygame
-import sys
 import torch
 import random
 from environment import Environment
@@ -9,33 +12,79 @@ from settings import *
 from prey import Prey
 from predator import Predator
 import uuid
-def crossover(parent1 : NeuralNetwork, parent2 : NeuralNetwork):
-    child1 = NeuralNetwork()
-    child2 = NeuralNetwork()
 
-    cross_over_idx = round(len(parent1.input.weight.data) * CROSS_OVER_THRESHOLD)
-    child1.input.weight.data = torch.cat((parent1.input.weight.data[0:cross_over_idx], parent2.input.weight.data[cross_over_idx::]), dim=0)
-    child2.input.weight.data = torch.cat((parent2.input.weight.data[0:cross_over_idx], parent1.input.weight.data[cross_over_idx::]), dim=0)
+def deconstruct_statedict(model: torch.nn.Module) -> torch.Tensor:
+    one_dim_statedict = torch.Tensor()
+    for key_name, weights in model.state_dict().items():
+        flatten_weights = torch.flatten(weights)
+        one_dim_statedict = torch.cat((one_dim_statedict, flatten_weights), dim=0)
+    return one_dim_statedict
 
-    #cross_over_idx = round(len(parent1.hidden.weight.data) * CROSS_OVER_THRESHOLD)
-    #child1.hidden.weight.data = torch.cat((parent1.hidden.weight.data[0:cross_over_idx], parent2.hidden.weight.data[cross_over_idx::]), dim=0)
-    #child2.hidden.weight.data = torch.cat((parent2.hidden.weight.data[0:cross_over_idx], parent1.hidden.weight.data[cross_over_idx::]), dim=0)
+def get_model_architecture(model: torch.nn.Module) -> dict:
+    model_architecture = {}
+    for key_name, weights in model.state_dict().items():
+        model_architecture[key_name] = weights.shape
+    return model_architecture
 
-    cross_over_idx = round(len(parent1.output.weight.data) * CROSS_OVER_THRESHOLD)
-    child1.output.weight.data = torch.cat((parent1.output.weight.data[0:cross_over_idx], parent2.output.weight.data[cross_over_idx::]), dim=0)
-    child2.output.weight.data = torch.cat((parent2.output.weight.data[0:cross_over_idx], parent1.output.weight.data[cross_over_idx::]), dim=0)
+def reconstruct_statedict(flatten_weights: torch.Tensor, model_architecture : dict) -> dict:
+    state_dict = {}
+    pointer = 0
+    for key_name, weights_shape in model_architecture.items():
+        if len(weights_shape) > 1:
+            count_of_weights_this_module_needs = weights_shape[0] * weights_shape[1]
+        else:
+            count_of_weights_this_module_needs = weights_shape[0]
+        slice_of_selected_weights = flatten_weights[pointer: pointer + count_of_weights_this_module_needs]
+        state_dict[key_name] = torch.reshape(slice_of_selected_weights, model_architecture[key_name])
+        pointer = count_of_weights_this_module_needs + pointer
+    return state_dict
 
-    return child1, child2
+def cross_over(population: List[torch.Tensor], count_of_children_needed: int ) -> List[torch.Tensor]:
+    cross_over_idx = round(len(population[0]) * CROSS_OVER_THRESHOLD)
+    children = []
+    for idx in range(count_of_children_needed):
+        # Find parents
+        male = random.sample(population, k=1)[0]
+        female = random.sample(population, k=1)[0]
+        # Slice genes
+        male_first_part = male[0:cross_over_idx]
+        male_second_part = male[cross_over_idx::]
+        female_first_part = female[0:cross_over_idx]
+        female_second_part = female[cross_over_idx::]
+        # Create new children
+        child1 = torch.cat((male_first_part, female_second_part))
+        child2 = torch.cat((female_first_part, male_second_part))
+        children.append(child1)
+        children.append(child2)
+    return children
 
+def mutation(children: List[torch.Tensor]) -> List[torch.Tensor]:
+    mutated_children = []
 
-def mutate(model: NeuralNetwork) -> NeuralNetwork:
-    for param in model.parameters():
-        if torch.rand(1).item() < 0.5:
-            if torch.rand(1).item() < 0.5:
-                param.data -= torch.randn_like(param.data) * MUTATION_CHANGE_THRESHOLD
-            else:
-                param.data += torch.randn_like(param.data) * MUTATION_CHANGE_THRESHOLD
-    return model
+    if len(children) == 0:
+        return mutated_children
+
+    count_of_initial_model_weights = children[0].size(dim=0)
+
+    for child in children:
+        # Create mutation values.
+        # Some random values. => exp. [0.9420, 0.8821, 0.4306, 0.7354, 0.1637]
+        mutation_base_values = torch.rand(count_of_initial_model_weights)
+        # Scale those random numbers. => exp. [0.0283, 0.0265, 0.0129, 0.0221, 0.0049]
+        scaled_mutation_values = mutation_base_values * MUTATION_CHANGE_THRESHOLD
+        # Get negation signs so weights are gonna increase and decrease. => exp. [ 1,  1,  1, -1, -1]
+        negation_signs_for_scaled_mutation_values =torch.randint(0,2,size=(1, count_of_initial_model_weights)).squeeze() * 2 - 1
+        # Actual values which could be or not added to genes, only added if genes are selected. => exp. [ 0.0019,  0.0040,  0.0018, -0.0296, -0.0187]
+        mutation_values_with_negation_signs = torch.mul(scaled_mutation_values, negation_signs_for_scaled_mutation_values)
+        # Select which genes are gonna be mutated. => exp. [1, 1, 0, 0, 1]
+        gene_selection_for_mutation = torch.randint(0, 2, (1, count_of_initial_model_weights)).squeeze()
+        # Actual mutation, these values are gonna be added to cross overed children. => exp. [ 0.0211,  0.0058, -0.0000,  0.0000, -0.0172]
+        mutation_values = torch.mul(gene_selection_for_mutation, mutation_values_with_negation_signs)
+        # Perform mutation
+        mutated_child = torch.add(child, mutation_values)
+        mutated_children.append(mutated_child)
+    return mutated_children
+
 
 def handle_predator(population: list[Predator]) -> list[NeuralNetwork]:
     sorted_population = sorted(population, key=lambda x: x.get_fitness_score(), reverse=True)
@@ -44,23 +93,26 @@ def handle_predator(population: list[Predator]) -> list[NeuralNetwork]:
     best_individuals_in_population = sorted_population[0:threshold]
 
     print(f'Best predator:  {best_individuals_in_population[0].get_describe()}')
-
+    brains = [individual.brain for individual in best_individuals_in_population]
     next_generation = []
-    next_generation.extend([individual.brain for individual in best_individuals_in_population])
+    next_generation.extend(brains)
 
     count_of_children_needed = PREDATOR_COUNT - len(best_individuals_in_population) // 2 + 1
 
-    # Crossover and mutation
-    for idx in range(count_of_children_needed):
-        parent1 = random.sample(best_individuals_in_population, k=1)[0]
-        parent2 = random.sample(best_individuals_in_population, k=1)[0]
-        child1, child2 = crossover(parent1.brain, parent2.brain)
-        child1 = mutate(child1)
-        child2 = mutate(child2)
-        next_generation.extend([child1, child2])
+    adn_list = [deconstruct_statedict(brain) for brain in brains]
+    children_adn = cross_over(adn_list, count_of_children_needed)
+    model_architecture = get_model_architecture(brains[0])
+    for adn in children_adn:
+        state_dict = reconstruct_statedict(adn, model_architecture)
+        brain = NeuralNetwork()
+        brain.load_state_dict(state_dict)
+        brain.eval()
+        next_generation.append(brain)
     return next_generation
 
 def initialize_population(environment : Environment):
+    environment.preys = []
+    environment.predators = []
     for _ in range(PREY_COUNT):
         environment.preys.append(Prey(uuid.uuid4(), (random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
 
@@ -87,14 +139,22 @@ fontObj = pygame.font.Font(None, 32)
 e = Environment(SCREEN)
 initialize_population(e)
 generation = 0
+running = True
 
-while True:
+prey = 0
+predator = 0
+
+while running:
     if e.is_epoch_completed():
-        print(f'Epoch {generation} is completed')
         if e.get_prey_count() == 0:
             print('All preys are dead')
+            predator += 1
         else:
             print('All predators are dead')
+            prey += 1
+
+        print(f'Epoch {generation} is completed')
+        print(f'Prey - Predator: {prey} - {predator}')
 
         e.kill_all()
         predator_brains = handle_predator(e.predators)
@@ -103,10 +163,11 @@ while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            running = False
 
-    e.update()
+    delta_time = clock.get_time() / 1000.0
+    e.update(delta_time)
+
     generationCounter = fontObj.render(f'Generation {generation}', True, BLACK, TEXT_BACKGROUND)
     preyCounter = fontObj.render(f'Prey {e.get_prey_count()}', True, GREEN, TEXT_BACKGROUND)
     predatorCounter = fontObj.render(f'Predator {e.get_predator_count()}', True, RED, TEXT_BACKGROUND)
@@ -118,3 +179,5 @@ while True:
     pygame.display.flip()
 
     clock.tick(FPS)
+
+pygame.quit()
