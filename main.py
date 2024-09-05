@@ -12,6 +12,26 @@ from settings import *
 from prey import Prey
 from predator import Predator
 import uuid
+import shutil
+import os
+
+def delete_folder(folder_path: str) -> None:
+    try:
+        shutil.rmtree(folder_path)
+        print(f'Successfully deleted {folder_path}')
+    except Exception as e:
+        print(f'Failed to delete {folder_path}. Reason: {e}')
+
+def create_folder(folder_path: str) -> None:
+    try:
+        os.makedirs(folder_path, exist_ok=True)
+        print(f'Successfully created the folder {folder_path}')
+    except Exception as e:
+        print(f'Failed to create the folder {folder_path}. Reason: {e}')
+
+def check_folder_exists(folder_path: str) -> bool:
+    return os.path.exists(folder_path)
+
 
 def deconstruct_statedict(model: torch.nn.Module) -> torch.Tensor:
     one_dim_statedict = torch.Tensor()
@@ -115,9 +135,21 @@ def initialize_population(environment : Environment):
     environment.predators = []
     for _ in range(PREY_COUNT):
         environment.preys.append(Prey(uuid.uuid4(), (random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
+    if check_folder_exists(folder_name):
+        first_state_dict = torch.load(os.path.join(folder_name, 'best_predator_brain.pth'))
+        second_state_dict = torch.load(os.path.join(folder_name, 'second_best_predator_brain.pth'))
 
-    for _ in range(PREDATOR_COUNT):
-        environment.predators.append(Predator(uuid.uuid4(), NeuralNetwork(),(random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
+        for i in range(PREDATOR_COUNT):
+            brain = NeuralNetwork()
+            if i % 2 == 0:
+                state_dict = first_state_dict
+            else:
+                state_dict = second_state_dict
+            brain.load_state_dict(state_dict)
+            environment.predators.append(Predator(uuid.uuid4(), brain,(random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
+    else:
+        for _ in range(PREDATOR_COUNT):
+            environment.predators.append(Predator(uuid.uuid4(), NeuralNetwork(),(random.randint(0, WINDOW_WIDTH // (2 * DIAMETER)) * 2 * DIAMETER, random.randint(0, WINDOW_HEIGHT // (2 * DIAMETER)) * 2 * DIAMETER), environment))
 
 def recreate_population(environment : Environment, brains : list[NeuralNetwork]):
     environment.preys = []
@@ -137,6 +169,8 @@ clock = pygame.time.Clock()
 fontObj = pygame.font.Font(None, 32)
 
 e = Environment(SCREEN)
+folder_name = 'brain_storage'
+
 initialize_population(e)
 generation = 0
 running = True
@@ -181,3 +215,18 @@ while running:
     clock.tick(FPS)
 
 pygame.quit()
+
+
+if check_folder_exists(folder_name):
+    delete_folder(folder_name)
+
+create_folder(folder_name)
+
+sorted_population = sorted(e.predators, key=lambda x: x.get_fitness_score(), reverse=True)
+
+torch.save(sorted_population[0].brain.state_dict(), os.path.join(folder_name, 'first_predator_brain.pth'))
+torch.save(sorted_population[1].brain.state_dict(), os.path.join(folder_name, 'second_predator_brain.pth'))
+print('Best predator brains are saved')
+print('#1: ' + sorted_population[0].get_describe())
+print('#2: ' + sorted_population[1].get_describe())
+

@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb525ad-012b-4e81-8d9f-e9395944ad26" name="Changes" comment="fix ratio, now predator look normal now">
+    <list default="true" id="0fb525ad-012b-4e81-8d9f-e9395944ad26" name="Changes" comment="fix predator only &quot;see&quot; 1 target &#10;optimize genetic_algorithm based on ardalan-dsht implementation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NeuralNetwork.py" beforeDir="false" afterPath="$PROJECT_DIR$/NeuralNetwork.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entity.py" beforeDir="false" afterPath="$PROJECT_DIR$/entity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/environment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predator.py" beforeDir="false" afterPath="$PROJECT_DIR$/predator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prey.py" beforeDir="false" afterPath="$PROJECT_DIR$/prey.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
@@ -165,7 +161,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725457527992</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="fix predator only &quot;see&quot; 1 target &#10;optimize genetic_algorithm based on ardalan-dsht implementation">
+      <option name="closed" value="true" />
+      <created>1725552497081</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1725552497081</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -176,7 +180,8 @@
     <MESSAGE value="add Neural network support" />
     <MESSAGE value="only predator has NN" />
     <MESSAGE value="fix ratio, now predator look normal now" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix ratio, now predator look normal now" />
+    <MESSAGE value="fix predator only &quot;see&quot; 1 target &#10;optimize genetic_algorithm based on ardalan-dsht implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix predator only &quot;see&quot; 1 target &#10;optimize genetic_algorithm based on ardalan-dsht implementation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

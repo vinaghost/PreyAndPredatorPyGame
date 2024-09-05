@@ -1,4 +1,5 @@
 import uuid
+import random
 from typing import Tuple
 from entity import Entity
 from settings import *
@@ -18,6 +19,8 @@ class Predator(Entity):
 
         self._step_angle = PREDATOR_VISION_ANGLE // 24
         self._half_vision_angle = PREDATOR_VISION_ANGLE // 2
+
+        self.rotation = random.randint(0, 360)
 
         self.brain = brain
 
@@ -73,6 +76,8 @@ class Predator(Entity):
 
         result = np.empty([24])
 
+        count_predator = self.environment.get_predator_count()
+
         for i in range(24):
             angle = (i + 1) * self._step_angle - self._half_vision_angle
             rad = np.radians(angle + 90 + self.rotation)
@@ -90,10 +95,11 @@ class Predator(Entity):
                 if score > max_score:
                     max_score = score
 
-            if max_score > 0:
-                draw.line(self.environment.screen, RED, self.position, Vector2(x, y), 1)
-            else:
-                draw.line(self.environment.screen, GREEN, self.position, Vector2(x, y), 1)
+            if count_predator < 5:
+                if max_score > 0:
+                    draw.line(self.environment.screen, RED, self.position, Vector2(x, y), 1)
+                else:
+                    draw.line(self.environment.screen, GREEN, self.position, Vector2(x, y), 1)
 
             result[i] = max_score
         return result
