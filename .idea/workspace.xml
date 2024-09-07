@@ -4,9 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb525ad-012b-4e81-8d9f-e9395944ad26" name="Changes" comment="add save model file">
+    <list default="true" id="0fb525ad-012b-4e81-8d9f-e9395944ad26" name="Changes" comment="add time limit to epoch">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NeuralNetwork.py" beforeDir="false" afterPath="$PROJECT_DIR$/EntityBrain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/entity.py" beforeDir="false" afterPath="$PROJECT_DIR$/entity.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/environment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predator.py" beforeDir="false" afterPath="$PROJECT_DIR$/predator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prey.py" beforeDir="false" afterPath="$PROJECT_DIR$/prey.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +41,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.boids.executor": "Run",
     "Python.entity.executor": "Run",
     "Python.main.executor": "Run",
     "Python.settings.executor": "Run",
@@ -44,6 +52,29 @@
   }
 }]]></component>
   <component name="RunManager" selected="Python.main">
+    <configuration name="boids" type="PythonConfigurationType" factoryName="Python">
+      <module name="PreyAndPredatorPyGame" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="PYGAME_HIDE_SUPPORT_PROMPT" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/boids" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/boids/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="PreyAndPredatorPyGame" />
       <option name="ENV_FILES" value="" />
@@ -74,6 +105,7 @@
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="PYGAME_HIDE_SUPPORT_PROMPT" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -90,8 +122,9 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.test" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.boids" />
+      <item itemvalue="Python.test" />
     </list>
   </component>
   <component name="SharedIndexes">
@@ -174,7 +207,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725555079978</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="add time limit to epoch">
+      <option name="closed" value="true" />
+      <created>1725555403372</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1725555403372</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -187,7 +228,8 @@
     <MESSAGE value="fix ratio, now predator look normal now" />
     <MESSAGE value="fix predator only &quot;see&quot; 1 target &#10;optimize genetic_algorithm based on ardalan-dsht implementation" />
     <MESSAGE value="add save model file" />
-    <option name="LAST_COMMIT_MESSAGE" value="add save model file" />
+    <MESSAGE value="add time limit to epoch" />
+    <option name="LAST_COMMIT_MESSAGE" value="add time limit to epoch" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
