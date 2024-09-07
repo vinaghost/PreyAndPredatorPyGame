@@ -5,7 +5,7 @@ from typing import List
 
 import pygame
 import torch
-from pygame import Vector2
+from pygame import Vector2, time
 
 from EntityBrain import EntityBrain
 from predator import Predator
@@ -103,6 +103,9 @@ class Environment:
         self.screen = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption("Prey & Predator")
         self.clock = pygame.time.Clock()
+
+        self.last_click_time = 0
+        self.double_click_threshold = 500
 
         # init game
         self.preys = [] # type: List[Prey]
@@ -202,6 +205,17 @@ class Environment:
             self.give_birth()
             self.move_entities(delta_time)
             self.draw_entities()
+
+            # Check if any mouse button is pressed
+            mouse_buttons = pygame.mouse.get_pressed()
+            if mouse_buttons[0]:  # Left mouse button
+                current_time = time.get_ticks()
+                if current_time - self.last_click_time < self.double_click_threshold:
+                    pass
+                else:
+                    self.last_click_time = current_time
+                    mouse_pos = pygame.mouse.get_pos()
+                    print(f"Left mouse button is pressed at position {mouse_pos}")
 
             pygame.display.flip()
             self.clock.tick(FPS)

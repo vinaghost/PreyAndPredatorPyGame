@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb525ad-012b-4e81-8d9f-e9395944ad26" name="Changes" comment="add time limit to epoch">
+    <list default="true" id="0fb525ad-012b-4e81-8d9f-e9395944ad26" name="Changes" comment="update core">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NeuralNetwork.py" beforeDir="false" afterPath="$PROJECT_DIR$/EntityBrain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entity.py" beforeDir="false" afterPath="$PROJECT_DIR$/entity.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/environment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/predator.py" beforeDir="false" afterPath="$PROJECT_DIR$/predator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prey.py" beforeDir="false" afterPath="$PROJECT_DIR$/prey.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -215,7 +210,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725555403372</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="update core">
+      <option name="closed" value="true" />
+      <created>1725722605122</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1725722605122</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -229,7 +232,8 @@
     <MESSAGE value="fix predator only &quot;see&quot; 1 target &#10;optimize genetic_algorithm based on ardalan-dsht implementation" />
     <MESSAGE value="add save model file" />
     <MESSAGE value="add time limit to epoch" />
-    <option name="LAST_COMMIT_MESSAGE" value="add time limit to epoch" />
+    <MESSAGE value="update core" />
+    <option name="LAST_COMMIT_MESSAGE" value="update core" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
