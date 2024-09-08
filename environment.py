@@ -9,7 +9,7 @@ from prey import Prey
 from pyquadtree import QuadTree
 
 class Environment:
-    def __init__(self, width=180, height=180):
+    def __init__(self, width : int, height : int):
         self.w = width
         self.h = height
 
@@ -17,9 +17,6 @@ class Environment:
         self.screen = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption("Prey & Predator")
         self.clock = pygame.time.Clock()
-
-        self.last_click_time = 0
-        self.double_click_threshold = 500
 
         # init game
         self.preys = [] # type: List[Prey]
@@ -29,12 +26,11 @@ class Environment:
 
         self.model_architecture = get_model_architecture(EntityBrain())
 
-
     def get_prey_count(self) -> int:
-        return sum(1 for p in self.preys if p.is_alive)
+        return len(self.preys)
 
     def get_predator_count(self) -> int:
-        return sum(1 for p in self.predators if p.is_alive)
+        return len(self.predators)
 
     def initialize(self) -> None:
         self.preys = [Prey(0, EntityBrain(), Vector2(random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT))) for _ in range(PREY_COUNT)]
@@ -99,39 +95,28 @@ class Environment:
         for prey in self.preys:
             prey.draw(self.screen)
 
-    def stop(self):
-        self.running = False
+    def loop(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+
+        self.screen.fill(WHITE)
+        delta_time = self.clock.get_time() / 1000.0
+
+        self.update_entities()
+        self.filter_dead()
+        self.give_birth()
+        self.move_entities(delta_time)
+        self.draw_entities()
+
+        pygame.display.flip()
+        self.clock.tick(FPS)
 
     def start(self):
         self.running = True
-        self.initialize()
 
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-
-            self.screen.fill(WHITE)
-            delta_time = self.clock.get_time() / 1000.0
-
-            self.update_entities()
-            self.filter_dead()
-            self.give_birth()
-            self.move_entities(delta_time)
-            self.draw_entities()
-
-            # Check if any mouse button is pressed
-            mouse_buttons = pygame.mouse.get_pressed()
-            if mouse_buttons[0]:  # Left mouse button
-                current_time = time.get_ticks()
-                if current_time - self.last_click_time < self.double_click_threshold:
-                    pass
-                else:
-                    self.last_click_time = current_time
-                    mouse_pos = pygame.mouse.get_pos()
-                    #print(f"Left mouse button is pressed at position {mouse_pos}")
-
-            pygame.display.flip()
-            self.clock.tick(FPS)
-
+    def stop(self):
+        self.running = False
         pygame.quit()
+
+

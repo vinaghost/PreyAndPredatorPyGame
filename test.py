@@ -1,34 +1,28 @@
-from math import pi
-import matplotlib.pyplot as plt
-import numpy as np
-import time
+import csv
 
-# generating random data values
-x = np.linspace(1, 1000, 5000)
-y = np.random.randint(1, 1000, 5000)
+# Example arrays
+array1 = [1, 2, 3, 4, 5]
+array2 = ['a', 'b', 'c', 'd', 'e']
 
-# enable interactive mode
-plt.ion()
+# Open a file in write mode
+with open('output.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
 
-# creating subplot and figure
-fig = plt.figure()
-ax = fig.add_subplot(111)
-line1, = ax.plot(x, y)
+    # Write the arrays to the file
+    writer.writerow(array1)
+    writer.writerow(array2)
 
-# setting labels
-plt.xlabel("X-axis")
-plt.ylabel("Y-axis")
-plt.title("Updating plot...")
+# Open the file in read mode
+with open('output.csv', mode='r') as file:
+    reader = csv.reader(file)
 
-# looping
-for _ in range(50):
-    # updating the value of x and y
-    line1.set_xdata(x * _)
-    line1.set_ydata(y)
+    # Read the arrays from the file
+    array1 = next(reader)
+    array2 = next(reader)
 
-    # re-drawing the figure
-    fig.canvas.draw()
+# Convert the read strings to appropriate types if necessary
+array1 = [int(i) for i in array1]
+array2 = [str(i) for i in array2]
 
-    # to flush the GUI events
-    fig.canvas.flush_events()
-    time.sleep(0.1)
+print("Array 1:", array1)
+print("Array 2:", array2)

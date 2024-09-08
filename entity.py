@@ -22,7 +22,7 @@ class Entity:
         self.color = color
         self.speed = speed
 
-        self.step_angle = vision_range // 24
+        self.step_angle = vision_range // RAY_AMOUNT
         self.half_vision_angle = vision_range // 2
         self.sight = sight
 
@@ -52,7 +52,7 @@ class Entity:
 
     def draw(self, screen: Surface) -> None:
         draw.circle(screen, self.color, self.position, RADIUS)
-        draw.line(screen, self.color, self.position, self.position + Vector2(0,1).rotate(self.rotation) * RADIUS * 2, RADIUS // 5)
+        draw.line(screen, self.color, self.position, self.position + Vector2(0,1).rotate(self.rotation) * RADIUS * 1.5, RADIUS // 5)
 
     def move(self, delta_time : float) -> None:
         self.position += self.velocity * delta_time
@@ -144,11 +144,11 @@ class Entity:
         nearest_target_rects = [create_rect(target) for target in filter(is_valid_target, nearest_targets)]
 
         if len(nearest_target_rects) == 0:
-            return np.zeros([24])
+            return np.zeros([RAY_AMOUNT])
 
-        result = np.empty([24])
+        result = np.empty([RAY_AMOUNT])
 
-        for i in range(24):
+        for i in range(RAY_AMOUNT):
             angle = (i + 1) * self.step_angle - self.half_vision_angle
             rad = np.radians(angle + 90 + self.rotation)
 
