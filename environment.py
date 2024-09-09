@@ -1,5 +1,8 @@
+import random
+
 import pygame
-from pygame import Vector2, time
+from pygame import Vector2
+import concurrent.futures
 
 from EntityBrain import EntityBrain
 from misc.genetic import *
@@ -55,33 +58,54 @@ class Environment:
         for prey in self.preys:
             prey.update(tree)
     def give_birth(self):
-        if len(self.predators) < PREDATOR_COUNT:
-            predator_children = []
-            for predator in self.predators:
-                if predator.is_split_able():
-                    predator.split()
-                    brain_info = deconstruct_statedict(predator.brain)
-                    brain_info = mutation(brain_info)
-                    brain_info = reconstruct_statedict(brain_info, self.model_architecture)
-                    brain = EntityBrain()
-                    brain.load_state_dict(brain_info)
-                    brain.eval()
-                    predator_children.append(Predator(predator.generation + 1, brain, predator.position + Vector2(RADIUS, RADIUS)))
-            self.predators.extend(predator_children)
+        pregnant_predator = [predator for predator in self.predators if predator.is_split_able()]
+        predator_children_count = min(len(pregnant_predator), PREDATOR_COUNT - len(self.predators))
+        if predator_children_count < len(pregnant_predator):
+            pregnant_predator = random.sample(pregnant_predator, predator_children_count)
 
-        if len(self.preys) < PREY_COUNT:
-            prey_children = []
-            for prey in self.preys:
-                if prey.is_split_able():
-                    prey.split()
-                    brain_info = deconstruct_statedict(prey.brain)
-                    brain_info = mutation(brain_info)
-                    brain_info = reconstruct_statedict(brain_info, self.model_architecture)
-                    brain = EntityBrain()
-                    brain.load_state_dict(brain_info)
-                    brain.eval()
-                    prey_children.append(Prey(prey.generation + 1, brain, prey.position + Vector2(RADIUS, RADIUS)))
-            self.preys.extend(prey_children)
+
+        pregnant_prey = [prey for prey in self.preys if prey.is_split_able()]
+        prey_children_count = min(len(pregnant_prey), PREY_COUNT - len(self.preys))
+        if prey_children_count < len(pregnant_prey):
+            pregnant_prey = random.sample(pregnant_prey, prey_children_count)
+
+        def create_brain(brain : EntityBrain) -> EntityBrain:
+            info = deconstruct_statedict(brain)
+            info = mutation(info)
+            info = reconstruct_statedict(info, self.model_architecture)
+            child_brain = EntityBrain()
+            child_brain.load_state_dict(info)
+            child_brain.eval()
+            return child_brain
+
+        def predator_hospital():
+            children = []
+            for predator in pregnant_predator:
+                predator.split()
+                children.append(Predator(predator.generation + 1, create_brain(predator.brain),
+                                              predator.position + Vector2(random.randint(-RADIUS, RADIUS),
+                                                                          random.randint(-RADIUS, RADIUS))))
+            return children
+
+        def prey_hospital():
+            children = []
+            for prey in pregnant_prey:
+                prey.split()
+                children.append(Prey(prey.generation + 1, create_brain(prey.brain),
+                                      prey.position + Vector2(random.randint(-RADIUS, RADIUS),
+                                                              random.randint(-RADIUS, RADIUS))))
+            return children
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            predator_future = executor.submit(predator_hospital)
+            prey_future = executor.submit(prey_hospital)
+
+            new_predators = predator_future.result()
+            new_preys = prey_future.result()
+
+            self.predators.extend(new_predators)
+            self.preys.extend(new_preys)
+
 
     def move_entities(self, delta_time: float) -> None:
         for predator in self.predators:

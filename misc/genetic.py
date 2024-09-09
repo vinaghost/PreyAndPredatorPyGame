@@ -1,3 +1,5 @@
+# https://github.com/ardalan-dsht/genetic-algorithm-for-pytorch/blob/main/genetic_algorithm.py
+
 import random
 from typing import List
 
@@ -5,6 +7,8 @@ import torch
 
 from settings import *
 
+def create_instance(entity_type, *args, **kwargs):
+    return entity_type(*args, **kwargs)
 
 def deconstruct_statedict(model: torch.nn.Module) -> torch.Tensor:
     one_dim_statedict = torch.Tensor()
